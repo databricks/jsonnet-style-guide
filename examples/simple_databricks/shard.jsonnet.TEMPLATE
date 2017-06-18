@@ -27,5 +27,5 @@ local serviceDeployment = import "service-deployment.jsonnet.TEMPLATE";
 
   apiVersion: "v1",
   kind: "List",
-  items: [webapp, manager],
+  items: std.flattenArrays([webapp.items, manager.items]),
 }
