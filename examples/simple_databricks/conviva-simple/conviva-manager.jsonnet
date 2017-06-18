@@ -8,5 +8,6 @@ serviceDeployment + {
     customerName: "conviva",
     featureTier: "standard",
     database: "user-db.databricks.us-west-2.rds.amazonaws.com",
+    webappAddress: "conviva-webapp.prod.svc.cluster.local",
   },
 }
