@@ -4,10 +4,9 @@ local defaultEnv = {
   database: "user-db.databricks.us-west-2.rds.amazonaws.com",
 };
 
-local NewShard(customerName, release, featureTier="standard", env=defaultEnv) = {
+local NewShard(customerName, release, env=defaultEnv) = {
   local commonConf = {
     customerName: customerName,
-    featureTier: "standard",
     database: env.database,
   },
 

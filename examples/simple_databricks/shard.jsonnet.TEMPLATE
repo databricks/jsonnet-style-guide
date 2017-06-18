@@ -6,10 +6,8 @@ local serviceDeployment = import "service-deployment.jsonnet.TEMPLATE";
   release:: error "release must be defined",
 
   // Optional arguments
-  featureTier:: "standard",
   commonConf:: {
     customerName: $.customerName,
-    featureTier: "standard",
     database: "user-prod-db.databricks.us-west-2.rds.amazonaws.com",
   },
 
