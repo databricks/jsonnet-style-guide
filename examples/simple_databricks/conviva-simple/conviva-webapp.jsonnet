@@ -6,7 +6,7 @@ serviceDeployment + {
   dockerImage:: "webapp:2.42-rc1",
   serviceConf:: {
     customerName: "conviva",
-    featureTier: "standard",
     database: "user-db.databricks.us-west-2.rds.amazonaws.com",
+    managerAddress: "conviva-manager.prod.svc.cluster.local",
   },
 }
