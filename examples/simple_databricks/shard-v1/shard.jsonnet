@@ -1,6 +1,6 @@
 local shardTemplate = import "../shard.jsonnet.TEMPLATE";
 
 shardTemplate + {
-  customerName:: "conviva",
+  customerName:: "foocorp",
   release:: "2.42-rc1",
 }

@@ -1,11 +1,11 @@
 local serviceDeployment = import "../service-deployment.jsonnet.TEMPLATE";
 
-// The cluster manager deployment for conviva.
+// The cluster manager deployment for foocorp.
 serviceDeployment + {
-  serviceName:: "conviva-manager",
+  serviceName:: "foocorp-manager",
   dockerImage:: "manager:2.42-rc1",
   serviceConf:: {
-    customerName: "conviva",
+    customerName: "foocorp",
     database: "user-db.databricks.us-west-2.rds.amazonaws.com",
   },
 }

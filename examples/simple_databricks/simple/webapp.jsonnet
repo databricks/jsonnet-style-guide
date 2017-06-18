@@ -1,12 +1,12 @@
 local serviceDeployment = import "../service-deployment.jsonnet.TEMPLATE";
 
-// The webapp deployment for conviva.
+// The webapp deployment for foocorp.
 serviceDeployment + {
-  serviceName:: "conviva-webapp",
+  serviceName:: "foocorp-webapp",
   dockerImage:: "webapp:2.42-rc1",
   serviceConf:: {
-    customerName: "conviva",
+    customerName: "foocorp",
     database: "user-db.databricks.us-west-2.rds.amazonaws.com",
-    managerAddress: "conviva-manager.prod.svc.cluster.local",
+    managerAddress: "foocorp-manager.prod.svc.cluster.local",
   },
 }

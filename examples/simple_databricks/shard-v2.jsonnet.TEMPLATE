@@ -17,7 +17,7 @@ local NewShard(customerName, release, env=defaultEnv) = {
   },
 
   local manager = serviceDeployment + {
-    serviceName:: "conviva-manager",
+    serviceName:: "foocorp-manager",
     dockerImage:: "manager:" + release,
     serviceConf:: commonConf + {
       webappAddress: customerName + "-webapp.prod.svc.cluster.local",
