@@ -12,74 +12,26 @@ Jsonnet is a relatively constrained language, but we have found that sometimes t
 
 
 ## <a name='TOC'>Table of Contents</a>
-
 1. [Document History](#history)
 
 2. [Syntactic Style](#syntactic)
-    * [Naming Convention](#naming)
-    * [Variable Naming Convention](#variable-naming)
+    * [Autoformatting](#autoformatting)
+    * [Variable Declaration](#variable-declaration)
     * [Line Length](#linelength)
-    * [Rule of 30](#rule_of_30)
     * [Spacing and Indentation](#indent)
     * [Blank Lines (Vertical Whitespace)](#blanklines)
-    * [Parentheses](#parentheses)
-    * [Curly Braces](#curly)
-    * [Long Literals](#long_literal)
+
+3. [Defining and Using Abstractions](#abstractions)
+    * [Defining Classes](#defining-classes)
+    * [Defining Methods](#defining-methods)
+    * [Using Classes](#using-classes)
+    * [File Structure](#file-structure)
     * [Documentation Style](#doc)
-    * [Ordering within a Class](#ordering_class)
-    * [Imports](#imports)
-    * [Pattern Matching](#pattern-matching)
-    * [Infix Methods](#infix)
-    * [Anonymous Methods](#anonymous)
 
-1. [Scala Language Features](#lang)
-    * [Case Classes and Immutability](#case_class_immutability)
-    * [apply Method](#apply_method)
-    * [override Modifier](#override_modifier)
-    * [Destructuring Binds](#destruct_bind)
-    * [Call by Name](#call_by_name)
-    * [Multiple Parameter Lists](#multi-param-list)
-    * [Symbolic Methods (Operator Overloading)](#symbolic_methods)
-    * [Type Inference](#type_inference)
-    * [Return Statements](#return)
-    * [Recursion and Tail Recursion](#recursion)
-    * [Implicits](#implicits)
-    * [Exception Handling (Try vs try)](#exception)
-    * [Options](#option)
-    * [Monadic Chaining](#chaining)
-
-1. [Concurrency](#concurrency)
-    * [Scala concurrent.Map](#concurrency-scala-collection)
-    * [Explicit Synchronization vs Concurrent Collections](#concurrency-sync-vs-map)
-    * [Explicit Synchronization vs Atomic Variables vs @volatile](#concurrency-sync-vs-atomic)
-    * [Private Fields](#concurrency-private-this)
-    * [Isolation](#concurrency-isolation)
-
-1. [Performance](#perf)
-    * [Microbenchmarks](#perf-microbenchmarks)
-    * [Traversal and zipWithIndex](#perf-whileloops)
-    * [Option and null](#perf-option)
-    * [Scala Collection Library](#perf-collection)
-    * [private[this]](#perf-private)
-
-1. [Java Interoperability](#java)
-    * [Java Features Missing from Scala](#java-missing-features)
-    * [Traits and Abstract Classes](#java-traits)
-    * [Type Aliases](#java-type-alias)
-    * [Default Parameter Values](#java-default-param-values)
-    * [Multiple Parameter Lists](#java-multi-param-list)
-    * [Varargs](#java-varargs)
-    * [Implicits](#java-implicits)
-    * [Companion Objects, Static Methods and Fields](#java-companion-object)
-
-1. [Testing](#testing)
-    * [Intercepting Exceptions](#testing-intercepting)
-
-1. [Miscellaneous](#misc)
-    * [Prefer nanoTime over currentTimeMillis](#misc_currentTimeMillis_vs_nanoTime)
-    * [Prefer URI over URL](#misc_uri_url)
-    * [Prefer existing well-tested methods over reinventing the wheel](#misc_well_tested_method)
-
+4. [Best Practices](#best-practices)
+    * [The Golden Pattern](#golden-pattern)
+    * [Parameter Objects](#parameter-objects)
+    * [Overriding and Inserting Fields](#overriding-fields)
 
 
 ## <a name='history'>Document History</a>
@@ -87,13 +39,16 @@ Jsonnet is a relatively constrained language, but we have found that sometimes t
 
 ## <a name='syntactic'>Syntactic Style</a>
 
-### <a name='lint'>Autoformatting</a>
+### <a name='autoformatting'>Autoformatting</a>
 
 Use `jsonnet fmt` to format files. This will fix basic style errors.
 
+### <a name='variable-declaration'>Variable Declaration</a>
 
-### <a name='variable-definition'>Variable Definition</a>
-
+- Variables should be named in camelCase style, and should have self-evident names.
+  ```
+  local serverPort = 1000;
+  local clientPort = 2000;
 - Prefer `local` to `::` syntax for private/local variables. Unlike `::`, variables defined with `local` cannot be overridden by children, nor accessed by other files.
   ```
   {
@@ -107,92 +62,12 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
   }
   ```
 
-### <a name='variable-naming'>Variable Naming Convention</a>
-
-- Variables should be named in camelCase style, and should have self-evident names.
-  ```
-  local serverPort = 1000;
-  local clientPort = 2000;
-  ```
 
 ### <a name='linelength'>Line Length</a>
 
 - Limit lines to 100 characters.
 - The only exceptions are import statements and URLs (although even for those, try to keep them under 100 chars).
 
-### <a name='linelength'>Indentation</a>
-- Use 2-space indentation in general.
-- Only method or class parameter declarations use 4-space indentation, to visually differentiate parameters from method body.
-  ```
-  local multiply(
-      number1,
-      number2) = {
-    result: number1 * number 2
-  }
-  ```
-
-### <a name='class-definitions'>ClassDefinitions</a>
-
-- When defining a class, use the following syntax:
-  ```
-  local Animal(name, age) = {
-    name: name,
-    age: age,
-  };
-  {
-    newAnimal:: Animal,
-  }
-  ```
-- Above syntax is preferred as it is "type-safe" both in what parameters can be passed and what fields it exposes.
-- Returning a dictionary with a "newXXX" method (rather than just returning the constructor directly) allows exposing constants, static methods, or related class constructors from the same file. In other words, it allows extending this class in the future without refactoring all downstream consumers.
-- When defining a class with both required and optional parameters, put required parameters first. Optional parameters should have a default, or `null` if a sentinel value is needed.
-  ```
-  local Animal(name, age, isCat = true)
-  ```
-- Wrap parameter declarations by putting one per line with 2 extra spaces of indentation, to differentiate from the method body. Doing this is always acceptable, even if the definition would not wrap.
-  ```
-  local Animal(
-      name,
-      age,
-      isCat = true) = { 
-    name: name,
-    ...
-  }
-  ```
-
-### <a name='method-definitions'>Method Definitions</a>
-- Method definitions follow the same syntax as class definitions.
-- Methods defined within a class should always be defined with `::`, as they fail to render with `:`.
-- Methods which return single values (rather than a dictionary) should use parentheses `()` to enclose their bodies if they are multi-line, identically to how braces would be used.
-  ```
-  {
-    multiply:: function(number1, number2): (
-      number1 * number 2
-    ),
-  }
-  ```
-
-### <a name='class-definitions'>Class Usage</a>
-- Import all dependencies at the top of the file and given them names related to the imported file itself. This makes it easy to see what other files you depend on as the file grows.
-  ```
-  // CORRECT
-  local Animal = import "animal.jsonnet.TEMPLATE";
-  Animal.newAnimal("Finnegan", 3)
-
-  // AVOID
-  (import "animal.jsonnet.TEMPLATE").newAnimal("Finnegan, 3)
-  ```
-- Prefer using named parameters, one per line, when constructing classes or invoking methods, especially when they wrap beyond one line:
-  ```
-  // PREFERRED
-  Animal.newAnimal(
-    name = "Finnegan",
-    age = 3,
-  )
-
-  // ACCEPTABLE, since it does not wrap
-  Animal.newAnimal("Finnegan", 3)
-  ```
 
 ### <a name='indent'>Spacing and Indentation</a>
 
@@ -247,7 +122,6 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
   local multiply = "*";
   ```
 
-
 ### <a name='blanklines'>Blank Lines (Vertical Whitespace)</a>
 
 - A single blank line appears:
@@ -256,6 +130,81 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
 - Use one or two blank line(s) to separate class definitions.
 - Excessive number of blank lines is discouraged.
 
+
+## <a name='abstractions'>Defining and Using Abstractions</a>
+
+### <a name='defining-classes'>Defining Classes</a>
+- Rather than defining a concrete JSON file, it is often useful to define a template which takes some set of parameters before being materialized into JSON. We can liken named functions which take a set of parameters and result in a fixed scheme to "classes" in object-oriented languages, and so we will use that terminology.
+- When defining a class, use the following syntax:
+  ```
+  local Animal(name, age) = {
+    name: name,
+    age: age,
+  };
+  {
+    newAnimal:: Animal,
+  }
+  ```
+- Above syntax is preferred as it is "type-safe" both in the schema of the input (parameters) and output (fields it exposes). [TODO: Determine wording here.]
+- Returning a dictionary with a "newXXX" method (rather than just returning the constructor directly) allows exposing constants, static methods, or related class constructors from the same file. In other words, it allows extending this class in the future without refactoring all downstream consumers.
+- When defining a class with both required and optional parameters, put required parameters first. Optional parameters should have a default, or `null` if a sentinel value is needed.
+  ```
+  local Animal(name, age, isCat = true)
+  ```
+- Wrap parameter declarations by putting one per line with 2 extra spaces of indentation, to differentiate from the method body. Doing this is always acceptable, even if the definition would not wrap.
+  ```
+  local Animal(
+      name,
+      age,
+      isCat = true) = { 
+    name: name,
+    ...
+  }
+  ```
+
+### <a name='defining-methods'>Defining Methods</a>
+- Method definitions follow the same syntactic style as class definitions.
+- Methods defined within a class should always be defined with `::`, as they fail to render with `:`.
+- Methods which return single values (rather than a dictionary) should use parentheses `()` to enclose their bodies if they are multi-line, identically to how braces would be used.
+  ```
+  {
+    multiply:: function(number1, number2): (
+      number1 * number 2
+    ),
+  }
+  ```
+
+### <a name='using-classes'>Using Classes</a>
+- Import all dependencies at the top of the file and given them names related to the imported file itself. This makes it easy to see what other files you depend on as the file grows.
+  ```
+  // CORRECT
+  local Animal = import "animal.jsonnet.TEMPLATE";
+  Animal.newAnimal("Finnegan", 3)
+
+  // AVOID
+  (import "animal.jsonnet.TEMPLATE").newAnimal("Finnegan, 3)
+  ```
+- Prefer using named parameters, one per line, when constructing classes or invoking methods, especially when they wrap beyond one line:
+  ```
+  // PREFERRED
+  Animal.newAnimal(
+    name = "Finnegan",
+    age = 3,
+  )
+
+  // ACCEPTABLE, since it does not wrap
+  Animal.newAnimal("Finnegan", 3)
+  ```
+
+### <a name='file-structure'>File Structure</a>
+- Jsonnet files which can be materialized with no further inputs should end with the ".jsonnet" suffix.
+- Jsonnet files which requires parameters to be materialized or which are libraries should end with the ".jsonnet.TEMPLATE" suffix.
+- Structuring libraries and imports is not a solved problem, so use your best judgement. In general if you have one common template and many individual instantiations, a workable pattern is:
+  ```
+  central-database/database.jsonnet.TEMPLATE <-- common template
+  central-database/dev/database.jsonnet <-- dev instantiation which imports common template
+  central-database/prod/database.jsonnet <-- prod instantiation which also imports common template
+  ```
 
 ### <a name='doc'>Documentation Style</a>
 
@@ -269,19 +218,10 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
   ```
 - Always put documentation at the top of each jsonnet file or template to indicate its purpose.
 
-### <a name='file-structure'>File Structure</a>
-- Jsonnet files which can be materialized with no further inputs should end with the ".jsonnet" suffix.
-- Jsonnet files which requires parameters to be materialized or which are libraries should end with the ".jsonnet.TEMPLATE" suffix.
-- Structuring libraries and imports is not a solved problem, so use your best judgement. In general if you have one common template and many individual instantiations, a workable pattern is:
-  ```
-  central-database/database.jsonnet.TEMPLATE <-- common template
-  central-database/dev/database.jsonnet <-- dev instantiation which imports common template
-  central-database/prod/database.jsonnet <-- prod instantiation which also imports common template
-  ```
 
-## <a name='lang'>Best Practices</a>
+## <a name='best-practices'>Best Practices</a>
 
-### <a name='golden_pattern'>The Golden Pattern</a>
+### <a name='golden-pattern'>The Golden Pattern</a>
 
 In most cases, you can define a single class which outputs the entire template you're looking for, and have a single concrete jsonnet file per actual resource to create. For example, you might define a common database template and a single dev jsonnet and a single prod jsonnet which imports from the common template.
 
@@ -321,7 +261,7 @@ Use this pattern as far as it will get you. Avoid implementing further abstracti
 
 On the flip side, new additions may require significant mechanial work due to repition. Templates __do not have to be DRY__ (don't repeat yourself) because they are fully materialized at commit time, so correctness issues of repetitiveness are reduced and readability is more important. Use your best judgement when deciding when to build out a new abstraction to avoid repetition.
 
-### <a name='parameter_objects'>Paramter objects</a>
+### <a name='parameter-objects'>Paramter Objects</a>
 
 In situations where sets of parameters are shared between multiple templates or objects, define parameter objects which extract out the common set.
 
@@ -340,7 +280,7 @@ local FrontendVirtualMachine(awsVpcParams, instanceName) = {
 } 
 ```
 
-### <a name='overriding_fields'>Overriding and inserting fields</a>
+### <a name='overriding-fields'>Overriding and Inserting Fields</a>
 
 Jsonnet has excellent support for supplementing existing JSON structures with new fields, for example:
 
@@ -368,5 +308,5 @@ local myCatParams = protoCat + {
 local myCat = Animal.newAnimal(myCatParams)
 ``` 
 
-This pattern ensures that inputs and outputs are fully determined by the code within Animal.
+This pattern ensures that inputs and outputs are fully determined by the code within Animal, rather than split between Animal and callers.
 
