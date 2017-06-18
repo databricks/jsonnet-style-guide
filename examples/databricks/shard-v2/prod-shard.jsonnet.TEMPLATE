@@ -1,0 +1,10 @@
+local shardTemplate = import "shard.jsonnet.TEMPLATE";
+local prodEnv = import "prod-env.json";
+
+local newProdShard(customerName, release) = (
+  shardTemplate.newShard(customerName, release, env=prodEnv)
+);
+
+{
+  newProdShard(customerName, release): newProdShard(customerName, release),
+}

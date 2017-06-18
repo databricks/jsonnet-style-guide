@@ -1,0 +1,10 @@
+local shardTemplate = import "shard.jsonnet.TEMPLATE";
+local devEnv = import "dev-env.json";
+
+local newDevShard(shardName, release) = (
+  shardTemplate.newShard(shardName, release, env=devEnv)
+);
+
+{
+  newDevShard(shardName, release): newDevShard(shardName, release),
+}

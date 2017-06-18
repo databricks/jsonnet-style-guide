@@ -1,10 +1,6 @@
-local serviceDeployment = import "service-deployment.jsonnet.TEMPLATE";
+local serviceDeployment = import "../service-deployment.jsonnet.TEMPLATE";
 
-local defaultEnv = {
-  database: "user-db.databricks.us-west-2.rds.amazonaws.com",
-};
-
-local NewShard(customerName, release, env=defaultEnv) = {
+local newShard(customerName, release, env) = {
   local commonConf = {
     customerName: customerName,
     database: env.database,
@@ -17,7 +13,7 @@ local NewShard(customerName, release, env=defaultEnv) = {
   },
 
   local manager = serviceDeployment + {
-    serviceName:: "foocorp-manager",
+    serviceName:: customerName + "-manager",
     dockerImage:: "manager:" + release,
     serviceConf:: commonConf + {
       webappAddress: customerName + "-webapp.prod.svc.cluster.local",
@@ -29,7 +25,7 @@ local NewShard(customerName, release, env=defaultEnv) = {
   items: [webapp, manager],
 };
 
-// Export the function as a construct for shards
+// Export the function as a constructor for shards
 {
-  NewShard: NewShard,
+  newShard: newShard,
 }

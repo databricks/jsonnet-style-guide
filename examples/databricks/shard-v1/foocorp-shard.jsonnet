@@ -1,4 +1,4 @@
-local shardTemplate = import "../shard.jsonnet.TEMPLATE";
+local shardTemplate = import "shard.jsonnet.TEMPLATE";
 
 shardTemplate + {
   customerName:: "foocorp",

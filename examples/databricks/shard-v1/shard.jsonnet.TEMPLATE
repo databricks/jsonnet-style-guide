@@ -1,4 +1,4 @@
-local serviceDeployment = import "service-deployment.jsonnet.TEMPLATE";
+local serviceDeployment = import "../service-deployment.jsonnet.TEMPLATE";
 
 {
   // Required arguments
@@ -8,7 +8,7 @@ local serviceDeployment = import "service-deployment.jsonnet.TEMPLATE";
   // Optional arguments
   commonConf:: {
     customerName: $.customerName,
-    database: "user-prod-db.databricks.us-west-2.rds.amazonaws.com",
+    database: "user-db.databricks.us-west-2.rds.amazonaws.com",
   },
 
   local webapp = serviceDeployment + {
