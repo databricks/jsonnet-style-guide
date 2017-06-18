@@ -1,0 +1,36 @@
+local serviceDeployment = import "service-deployment.jsonnet.TEMPLATE";
+
+local defaultEnv = {
+  database: "user-db.databricks.us-west-2.rds.amazonaws.com",
+};
+
+local NewShard(customerName, release, featureTier="standard", env=defaultEnv) = {
+  local commonConf = {
+    customerName: customerName,
+    featureTier: "standard",
+    database: env.database,
+  },
+
+  local webapp = serviceDeployment + {
+    serviceName:: customerName + "-webapp",
+    dockerImage:: "webapp:" + release,
+    serviceConf:: commonConf,
+  },
+
+  local manager = serviceDeployment + {
+    serviceName:: "conviva-manager",
+    dockerImage:: "manager:" + release,
+    serviceConf:: commonConf + {
+      webappAddress: customerName + "-webapp.prod.svc.cluster.local",
+    },
+  },
+
+  apiVersion: "v1",
+  kind: "List",
+  items: [webapp, manager],
+};
+
+// Export the function as a construct for shards
+{
+  NewShard: NewShard,
+}
