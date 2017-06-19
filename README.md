@@ -1,6 +1,6 @@
 # Databricks Jsonnet Guide
 
-With over 1000 jsonnet files and templates, Databricks is to the best of our knowledge the largest user of Jsonnet. This guide draws from our experience coaching and working with engineers at Databricks.
+With over 1000 jsonnet files and templates, Databricks is to the best of our knowledge one of the larger users of Jsonnet. This guide draws from our experience coaching and working with engineers at Databricks.
 
 Jsonnet is a language used most commonly to describe a finite number of complex, differentiated resources. For example, we may be describing services deployed within a Kubernetes cluster, differentiated by running in development versus production. As another example, we may be describing resources within a Cloud Provider, such as an Amazon RDS or Google Cloud SQL database, deployed across differnet regions.
 
