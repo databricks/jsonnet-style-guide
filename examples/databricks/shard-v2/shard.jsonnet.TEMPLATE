@@ -22,7 +22,7 @@ local newShard(customerName, release, env) = {
 
   apiVersion: "v1",
   kind: "List",
-  items: [webapp, manager],
+  items: std.flattenArrays([webapp.items, manager.items]),
 };
 
 // Export the function as a constructor for shards
