@@ -1,4 +1,4 @@
-# Databricks Scala Guide
+# Databricks Jsonnet Guide
 
 With over 1000 jsonnet files and templates, Databricks is to the best of our knowledge the largest user of Jsonnet. This guide draws from our experience coaching and working with engineers at Databricks.
 
