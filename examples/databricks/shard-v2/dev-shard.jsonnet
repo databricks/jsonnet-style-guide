@@ -1,3 +1,3 @@
-local ShardTemplate = import "dev-shard.jsonnet.TEMPLATE";
+local shardTemplate = import "dev-shard.jsonnet.TEMPLATE";
 
-ShardTemplate.newDevShard("dev-test-1")
+shardTemplate.newDevShard("dev-test", "bleeding-edge")

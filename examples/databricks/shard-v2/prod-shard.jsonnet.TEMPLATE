@@ -1,10 +1,10 @@
-local ShardTemplate = import "shard.jsonnet.TEMPLATE";
-local ProdEnv = import "prod-env.json";
+local shardTemplate = import "shard.jsonnet.TEMPLATE";
+local prodEnv = import "prod-env.json";
 
-local ProdShard(customerName, release) = (
-  ShardTemplate.newShard(customerName, release, env=ProdEnv)
+local newProdShard(customerName, release) = (
+  shardTemplate.newShard(customerName, release, env=prodEnv)
 );
 
 {
-  newProdShard: ProdShard,
+  newProdShard:: newProdShard,
 }

@@ -137,22 +137,22 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
 - Rather than defining a concrete JSON file, it is often useful to define a template which takes some set of parameters before being materialized into JSON. We can liken named functions which take a set of parameters and result in a fixed scheme to "classes" in object-oriented languages, and so we will use that terminology.
 - When defining a class, use the following syntax:
   ```
-  local Animal(name, age) = {
+  local newAnimal(name, age) = {
     name: name,
     age: age,
   };
   {
-    newAnimal:: Animal,
+    newAnimal:: newAnimal,
   }
   ```
 - Returning a dictionary with a "newXXX" method (rather than just returning the constructor directly) allows exposing constants, static methods, or related class constructors from the same file. In other words, it allows extending this class in the future without refactoring all downstream consumers.
 - When defining a class with both required and optional parameters, put required parameters first. Optional parameters should have a default, or `null` if a sentinel value is needed.
   ```
-  local Animal(name, age, isCat = true)
+  local newAnimal(name, age, isCat = true) = { ... }
   ```
 - Wrap parameter declarations by putting one per line with 2 extra spaces of indentation, to differentiate from the method body. Doing this is always acceptable, even if the definition would not wrap.
   ```
-  local Animal(
+  local newAnimal(
       name,
       age,
       isCat = true) = { 
@@ -177,8 +177,8 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
 - Import all dependencies at the top of the file and given them names related to the imported file itself. This makes it easy to see what other files you depend on as the file grows.
   ```
   // CORRECT
-  local Animal = import "animal.jsonnet.TEMPLATE";
-  Animal.newAnimal("Finnegan", 3)
+  local animalTemplate = import "animal.jsonnet.TEMPLATE";
+  animalTemplate.newAnimal("Finnegan", 3)
 
   // AVOID
   (import "animal.jsonnet.TEMPLATE").newAnimal("Finnegan, 3)
@@ -186,13 +186,13 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
 - Prefer using named parameters, one per line, when constructing classes or invoking methods, especially when they wrap beyond one line:
   ```
   // PREFERRED
-  Animal.newAnimal(
+  animalTemplate.newAnimal(
     name = "Finnegan",
     age = 3,
   )
 
   // ACCEPTABLE, since it does not wrap
-  Animal.newAnimal("Finnegan", 3)
+  animalTemplate.newAnimal("Finnegan", 3)
   ```
 
 ### <a name='file-structure'>File Structure</a>
@@ -228,7 +228,7 @@ In this case, a pattern like the following is most preferred:
 
 ```
 // Common Kubernetes Deployment template for a specific web application (webapp.jsonnet.TEMPLATE)
-local WebApp(customerName, releaseTag) = {
+local newWebApp(customerName, releaseTag) = {
   ... Kubernetes Deployment definition ...
   serviceName: customerName + "-webapp",
   dockerImage: "webapp:" + releaseTag,
@@ -236,21 +236,21 @@ local WebApp(customerName, releaseTag) = {
 };
 
 {
-  newWebApp:: WebApp,
+  newWebApp:: newWebApp,
 }
 
 
 // A dev webapp deployment (in dev/ericl-webapp.jsonnet)
-local WebApp = import "../webapp.jsonnet.TEMPLATE";
-WebApp.newWebApp(
+local webAppTemplate = import "../webapp.jsonnet.TEMPLATE";
+webAppTemplate.newWebApp(
   customerName = "dev-test-1",
   releaseTag = "bleeding-edge",
 )
 
 
 // A production webapp deployment (in prod/foocorp-webapp.jsonnet)
-local WebApp = import "../webapp.jsonnet.TEMPLATE";
-WebApp.newWebApp(
+local webAppTemplate = import "../webapp.jsonnet.TEMPLATE";
+webAppTemplate.newWebApp(
   customerName = "foocorp",
   releaseTag = "2.42-rc1",
 )
@@ -267,16 +267,16 @@ On the flip side, new additions may require significant mechanial work due to re
 In situations where sets of parameters are shared between multiple templates or objects, define parameter objects which extract out the common set.
 
 ```
-local AwsVpcParams(region, accountId, virtualNetworkId, encryptionKeyId) = {
+local newAwsVpcParams(region, accountId, virtualNetworkId, encryptionKeyId) = {
   ...
 };
 
 
-local UsersDatabase(awsVpcParams, instanceSize, highAvailability) = {
+local newUsersDatabase(awsVpcParams, instanceSize, highAvailability) = {
   ...
 }
 
-local FrontendVirtualMachine(awsVpcParams, instanceName) = {
+local newFrontendVirtualMachine(awsVpcParams, instanceName) = {
   ...
 } 
 ```
@@ -286,7 +286,7 @@ local FrontendVirtualMachine(awsVpcParams, instanceName) = {
 Jsonnet has excellent support for supplementing existing JSON structures with new fields, for example:
 
 ```
-local protoCat = Animal.newAnimal(name = "Finnegan", age = 3);
+local protoCat = animalTemplate.newAnimal(name = "Finnegan", age = 3);
 // ... many lines later ...
 local myCat = protoCat + {
   catYears: 28,
@@ -301,12 +301,12 @@ For example:
 
 ```
 // Better, but still to be avoided
-local protoCat = Animal.newAnimalParams(name = "Finnegan", age = 3);
+local protoCat = animalTemplate.newAnimalParams(name = "Finnegan", age = 3);
 // ... many lines later ...
 local myCatParams = protoCat + {
   catYears: 28,
 };
-local myCat = Animal.newAnimal(myCatParams)
+local myCat = animalTemplate.newAnimal(myCatParams)
 ``` 
 
 This pattern ensures that inputs and outputs are fully determined by the code within Animal, rather than split between Animal and callers.
