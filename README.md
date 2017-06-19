@@ -145,7 +145,6 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
     newAnimal:: Animal,
   }
   ```
-- Above syntax is preferred as it is "type-safe" both in the schema of the input (parameters) and output (fields it exposes). [TODO: Determine wording here.]
 - Returning a dictionary with a "newXXX" method (rather than just returning the constructor directly) allows exposing constants, static methods, or related class constructors from the same file. In other words, it allows extending this class in the future without refactoring all downstream consumers.
 - When defining a class with both required and optional parameters, put required parameters first. Optional parameters should have a default, or `null` if a sentinel value is needed.
   ```
@@ -228,34 +227,36 @@ In most cases, you can define a single class which outputs the entire template y
 In this case, a pattern like the following is most preferred:
 
 ```
-// Common database template for an Amazon RDS database to store users (users-database.jsonnet.TEMPLATE)
-local UsersDatabase(instanceSize, highAvailability) = {
-  ... CloudFormation stack describing an AWS RDS ...
-  rdsInstanceSize: instanceSize,
-  multiAvailabilityZone = highAvailability,
+// Common Kubernetes Deployment template for a specific web application (webapp.jsonnet.TEMPLATE)
+local WebApp(customerName, releaseTag) = {
+  ... Kubernetes Deployment definition ...
+  serviceName: customerName + "-webapp",
+  dockerImage: "webapp:" + releaseTag,
   ... etc ...
 };
 
 {
-  newUsersDatabase:: UsersDatabase
+  newWebApp:: WebApp,
 }
 
 
-// Dev users database (in dev/users-database.jsonnet)
-local UsersDatabase = import "../users-database.jsonnet.TEMPLATE";
-UsersDatabase.newUsersDatabase(
-  instanceSize = "db.m4.medium",
-  highAvailability = false,
+// A dev webapp deployment (in dev/ericl-webapp.jsonnet)
+local WebApp = import "../webapp.jsonnet.TEMPLATE";
+WebApp.newWebApp(
+  customerName = "dev-test-1",
+  releaseTag = "bleeding-edge",
 )
 
 
-// Prod users database (in prod/users-database.jsonnet)
-local UsersDatabase = import "../users-database.jsonnet.TEMPLATE";
-UsersDatabase.newUsersDatabase(
-  instanceSize = "db.m4.large",
-  highAvailability = true,
+// A production webapp deployment (in prod/foocorp-webapp.jsonnet)
+local WebApp = import "../webapp.jsonnet.TEMPLATE";
+WebApp.newWebApp(
+  customerName = "foocorp",
+  releaseTag = "2.42-rc1",
 )
 ```
+
+For a more complete example, see the [examples](/examples/databricks/shard-v2) and [blog post](TODO).
 
 Use this pattern as far as it will get you. Avoid implementing further abstractions and avoid default parameters for as long as possible. Keeping the number of abstractions low usually makes templates easier to understand. Avoiding default parameters means you have to explicitly choose a value in every situation (reducing corretness bugs).
 

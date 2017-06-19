@@ -1,6 +1,6 @@
 local serviceDeployment = import "../service-deployment.jsonnet.TEMPLATE";
 
-local newShard(customerName, release, env) = {
+local Shard(customerName, release, env) = {
   local commonConf = {
     customerName: customerName,
     database: env.database,
@@ -27,5 +27,5 @@ local newShard(customerName, release, env) = {
 
 // Export the function as a constructor for shards
 {
-  newShard: newShard,
+  newShard: Shard,
 }
