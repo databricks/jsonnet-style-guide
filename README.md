@@ -262,7 +262,7 @@ Use this pattern as far as it will get you. Avoid implementing further abstracti
 
 On the flip side, new additions may require significant mechanial work due to repition. Templates __do not have to be DRY__ (don't repeat yourself) because they are fully materialized at commit time, so correctness issues of repetitiveness are reduced and readability is more important. Use your best judgement when deciding when to build out a new abstraction to avoid repetition.
 
-### <a name='parameter-objects'>Paramter Objects</a>
+### <a name='parameter-objects'>Parameter Objects</a>
 
 In situations where sets of parameters are shared between multiple templates or objects, define parameter objects which extract out the common set.
 
