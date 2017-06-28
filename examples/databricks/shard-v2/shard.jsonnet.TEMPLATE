@@ -9,15 +9,15 @@ local newShard(customerName, release, env) = {
   local webapp = serviceDeployment + {
     serviceName:: customerName + "-webapp",
     dockerImage:: "webapp:" + release,
-    serviceConf:: commonConf,
+    serviceConf:: commonConf + {
+      managerAddress: customerName + "-manager.prod.svc.cluster.local",
+    },
   },
 
   local manager = serviceDeployment + {
     serviceName:: customerName + "-manager",
     dockerImage:: "manager:" + release,
-    serviceConf:: commonConf + {
-      webappAddress: customerName + "-webapp.prod.svc.cluster.local",
-    },
+    serviceConf:: commonConf,
   },
 
   apiVersion: "v1",
