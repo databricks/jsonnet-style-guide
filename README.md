@@ -198,10 +198,10 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
 ### <a name='file-structure'>File Structure</a>
 - Jsonnet files which can be materialized with no further inputs should end with the ".jsonnet" suffix.
 - Jsonnet files which requires parameters to be materialized or which are libraries should end with the ".jsonnet.TEMPLATE" suffix.
-- Additional suffixes can be appended to file name to indicate the type of resource a Jsonnet file is describing, for clarify purpose:
+- Additional suffixes can be appended to file name to indicate the type of resource a Jsonnet file is describing, for clarification purpose:
   ```
   instance.cfn.jsonnet.TEMPLATE <-- A Cloudformation template
-  genie-deploy.jjb.jsonnet <-- A Jenkins Pipeline Job template
+  manager-deploy.jjb.jsonnet <-- A Jenkins Pipeline Job template
   core-vnet.tf.jsonnet.TEMPLATE <-- A Terraform template
   ```
 - Structuring libraries and imports is not a solved problem, so use your best judgement. In general if you have one common template and many individual instantiations, a workable pattern is:
@@ -212,8 +212,8 @@ Use `jsonnet fmt` to format files. This will fix basic style errors.
   ```
 - Jsonnet files which are used to describe Kubernetes resources, e.g. deployment, service, should be put inside the package of the service or component itself, for better component isolation:
   ```
-  vault/deployment/vault-dev.jsonnet
-  webapp/service/webapp-service.jsonnet
+  myservice/deploy/myservice-dev.jsonnet <-- A Kubernetes deployment for 'dev' environment
+  webapp/deploy/webapp-service.jsonnet.TEMPLATE <-- A Kubernetes service template
   ```
 
 ### <a name='doc'>Documentation Style</a>
