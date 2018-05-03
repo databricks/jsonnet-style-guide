@@ -14,7 +14,7 @@
   },
   numReplicas:: 1,
 
-  // Defines a Kubernetes deployment
+  // Defines a Kubernetes service
   local service = {
     kind: "Service",
     metadata: {
@@ -30,7 +30,7 @@
     }
   },
 
-  // Defines a Kubernetes service
+  // Defines a Kubernetes deployment
   local deployment = {
     kind: "Deployment",
     metadata: {
