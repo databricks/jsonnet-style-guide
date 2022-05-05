@@ -269,7 +269,7 @@ webAppTemplate.newWebApp(
 
 For a more complete example, see the [examples](/examples/databricks/shard-v2) and [blog post](TODO).
 
-Use this pattern as far as it will get you. Avoid implementing further abstractions and avoid default parameters for as long as possible. Keeping the number of abstractions low usually makes templates easier to understand. Avoiding default parameters means you have to explicitly choose a value in every situation (reducing corretness bugs).
+Use this pattern as far as it will get you. Avoid implementing further abstractions and avoid default parameters for as long as possible. Keeping the number of abstractions low usually makes templates easier to understand. Avoiding default parameters means you have to explicitly choose a value in every situation (reducing correctness bugs).
 
 On the flip side, new additions may require significant mechanial work due to repition. Templates __do not have to be DRY__ (don't repeat yourself) because they are fully materialized at commit time, so correctness issues of repetitiveness are reduced and readability is more important. Use your best judgement when deciding when to build out a new abstraction to avoid repetition.
 
