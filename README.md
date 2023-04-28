@@ -304,7 +304,7 @@ local myCat = protoCat + {
 }
 ```
 
-This pattern is very convenient for implementing arbitrary transformers on data strutcures, but it should be used with caution because it makes it hard to reason about how code within the parent class is executing and what fields are provided on "myCat".
+This pattern is very convenient for implementing arbitrary transformers on data structures, but it should be used with caution because it makes it hard to reason about how code within the parent class is executing and what fields are provided on "myCat".
 
 This becomes especially confusing if you have multiple layers of such additions, or helper functions with transform properties within the input. In the rare cases that parameters are determined at various points within the code, prefer to make helper functions with construct and mutate parameter lists, which are ultimately passed to an Animal object.
 
